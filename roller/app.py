@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, abort, redirect, url_for
 from flask_socketio import SocketIO, emit
 from datetime import datetime
+from random import randint
 
 import eventlet
 eventlet.monkey_patch()
@@ -36,7 +37,14 @@ def set_name():
 
 @app.route('/history')
 def history():
-    return render_template('history.html', history=dice_history)
+    return render_template('history.html', history=reversed(dice_history))
+
+
+@app.route('/history/clear')
+def clear_history():
+    dice_history.clear()
+    emit('roll_event', {}, broadcast=True, namespace='/roll')
+    return redirect(url_for('index'))
 
 
 @app.route('/logout')
@@ -49,25 +57,37 @@ def logout_page():
 def handle_connect():
     if not name() in users:
         users.append(name())
-    emit('users', '<br>'.join(users), broadcast=True)
+    emit('users', '<br>'.join(sorted(users)), broadcast=True)
 
 
 @socketio.on('disconnect', namespace='/roll')
 def handle_disconnect():
     if name() in users:
         users.remove(name())
-    emit('users', '<br>'.join(users), broadcast=True)
+    emit('users', '<br>'.join(sorted(users)), broadcast=True)
 
 
 @socketio.on('roll_request',  namespace='/roll')
 def handle_roll_request(message):
-    ability = message.get('ability') or 2
-    specialty = message.get('specialty') or 0
-    # TODO: how does rolling in this system work?
-    dice_history.append(History(name(), '{}, {}'.format(ability, specialty), '?'))
-    emit('roll_event',
-        {'message': 'foobar', 'date': datetime.now().strftime('%I:%M:%S %p')},
-        broadcast=True)
+    try:
+        ability = int(message.get('ability') or 2)
+        bonus = int(message.get('bonus') or 0)
+        total = 0
+        rolls = []
+        keep_rolls = []
+        all_rolls = []
+        for _ in range(ability + bonus):
+            rolls.append(randint(1, 6))
+        all_rolls = map(str, rolls.copy())
+        for _ in range(ability):
+            keep_rolls.append(rolls.pop(rolls.index(max(rolls))))
+        total = sum(keep_rolls)
+        keep_rolls = map(str, keep_rolls)
+        dice_history.append(History(name(), '{}, {}'.format(ability, bonus),
+            '{} -> {} -> {}'.format(','.join(all_rolls), ','.join(keep_rolls), total)))
+        emit('roll_event', {}, broadcast=True)
+    except Exception as e:
+        print(e)
 
 
 class History:
@@ -76,3 +96,4 @@ class History:
         self.name = name
         self.dice = dice
         self.result = result
+        self.date = datetime.now().strftime('%I:%M:%S %p')
