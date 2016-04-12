@@ -14,3 +14,7 @@ div.container-large {
 span.loading {
     color: gray;
 }
+
+h3.nomartop {
+    margin-top: 0;
+}
