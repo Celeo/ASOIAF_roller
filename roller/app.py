@@ -42,7 +42,8 @@ def history():
 
 @app.route('/history/clear')
 def clear_history():
-    dice_history.clear()
+    global dice_history
+    dice_history = []
     emit('roll_event', {}, broadcast=True, namespace='/roll')
     return redirect(url_for('index'))
 
@@ -78,7 +79,7 @@ def handle_roll_request(message):
         all_rolls = []
         for _ in range(ability + bonus):
             rolls.append(randint(1, 6))
-        all_rolls = map(str, rolls.copy())
+        all_rolls = map(str, rolls)
         for _ in range(ability):
             keep_rolls.append(rolls.pop(rolls.index(max(rolls))))
         total = sum(keep_rolls)
