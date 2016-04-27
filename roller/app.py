@@ -75,18 +75,27 @@ def handle_roll_request(message):
     try:
         ability = int(message.get('ability') or 2)
         bonus = int(message.get('bonus') or 0)
+        static = int(message.get('static') or 0)
         total = 0
         rolls = []
         keep_rolls = []
         all_rolls = []
         for _ in range(ability + bonus):
             rolls.append(randint(1, 6))
-        all_rolls = map(str, rolls)
+        all_rolls = list(map(str, rolls))
         for _ in range(ability):
             keep_rolls.append(rolls.pop(rolls.index(max(rolls))))
-        total = sum(keep_rolls)
+        total = sum(keep_rolls) + static
         keep_rolls = map(str, keep_rolls)
-        h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {}'.format(','.join(all_rolls), ','.join(keep_rolls), total))
+        h = None
+        if static:
+            h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {} -> {}'.format( \
+                ','.join(all_rolls) + '+' + str(static),
+                ','.join(keep_rolls) + '+' + str(static),
+                str(total) + '+' + str(static),
+                str(total + static)))
+        else:
+            h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {}'.format(','.join(all_rolls), ','.join(keep_rolls), total))
         redis.lpush('history', h.to_json())
         emit('roll_event', {}, broadcast=True)
     except Exception as e:

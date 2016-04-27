@@ -18,7 +18,8 @@
             e.preventDefault();
             socket.emit('roll_request', {
                 ability: $('#dice_ability').val(),
-                bonus: $('#dice_bonus').val()
+                bonus: $('#dice_bonus').val(),
+                static: $('#dice_static').val()
             });
         });
         function loadHistory() {
@@ -55,11 +56,14 @@
                     <div class="panel-body">
                         <div id="control" class="float-middle">
                             <div class="row">
-                                <div class="col-sm-2 col-sm-offset-3">
+                                <div class="col-sm-2 col-sm-offset-2">
                                     <input type="text" class="form-control" id="dice_ability" placeholder="Ability dice">
                                 </div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="dice_bonus" placeholder="Bonus dice">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="dice_static" placeholder="Static +X">
                                 </div>
                                 <div class="col-sm-2">
                                     <button class="btn btn-primary" id="roll">Roll</button>
