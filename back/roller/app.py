@@ -14,14 +14,17 @@ app.config.from_pyfile('config.cfg')
 socketio = SocketIO(app)
 redis = Redis(app)
 users = []
+__all__ = ['app', 'socketio']
 
 
 def name():
+    # TODO
     return session.get('name', '')
 
 
 @app.route('/')
 def index():
+    # TODO
     if not name():
         return render_template('login.html')
     return render_template('index.html')
@@ -29,6 +32,7 @@ def index():
 
 @app.route('/setname', methods=['GET', 'POST'])
 def set_name():
+    # TODO
     name = request.form.get('name')
     if name:
         session['name'] = name
@@ -39,12 +43,14 @@ def set_name():
 
 @app.route('/history')
 def history():
+    # TODO
     history = [History.from_json(js) for js in redis.lrange('history', 0, redis.llen('history'))]
     return render_template('history.html', history=history)
 
 
 @app.route('/history/clear')
 def clear_history():
+    # TODO
     redis.delete('history')
     emit('roll_event', {}, broadcast=True, namespace='/roll')
     return redirect(url_for('index'))
@@ -52,6 +58,7 @@ def clear_history():
 
 @app.route('/logout')
 def logout_page():
+    # TODO
     session.clear()
     return redirect(url_for('index'))
 
