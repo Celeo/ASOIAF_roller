@@ -55,7 +55,7 @@ def history():
 @app.route('/history/clear')
 def clear_history():
     redis.delete('history')
-    emit('roll_event', {}, broadcast=True, namespace='/')
+    emit('roll_event', {}, broadcast=True)
     return jsonify({})
 
 
@@ -68,21 +68,21 @@ def leave():
     return jsonify({})
 
 
-@socketio.on('connect', namespace='/')
+@socketio.on('connect')
 def handle_connect():
     if not name() in users:
         users.append(name())
     emit('users', {'users': sorted(users)}, broadcast=True)
 
 
-@socketio.on('disconnect', namespace='/')
+@socketio.on('disconnect')
 def handle_disconnect():
     if name() in users:
         users.remove(name())
     emit('users', {'users': sorted(users)}, broadcast=True)
 
 
-@socketio.on('roll_request', namespace='/')
+@socketio.on('roll_request')
 def handle_roll_request(message):
     try:
         print('handle_roll_request')

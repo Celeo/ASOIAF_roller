@@ -94,7 +94,7 @@ import Vue from 'vue'
 import VueSocketio from 'vue-socket.io'
 
 
-Vue.use(VueSocketio, 'http://localhost:5000/socket.io');
+Vue.use(VueSocketio, 'http://localhost:5000/');
 
 export default {
     data () {
@@ -113,32 +113,32 @@ export default {
     },
     sockets: {
         connect: function() {
-            console.log('Connected to the backend web socket server')
+            console.log('<- sockets: Connected to the backend web socket server')
             this.connected = true
             this.hasConnected = true
         },
         disconnect: function() {
-            console.log('Disconnected from the backend web socket server')
+            console.log('<- sockets: Disconnected from the backend web socket server')
             this.connected = false
         },
         roll_event: function() {
-            console.log('roll_event')
+            console.log('<- sockets: roll_event')
             this.getHistory()
         },
         users: function(data) {
+            console.log('<- sockets: users')
             this.users = data.users
         }
     },
     methods: {
         getHistory: function() {
-            console.log('Loading history from backend ...')
+            console.log('http: history ->')
             this.$http.get('http://localhost:5000/history').then((response) => {
                 this.$set('history', response.data.history)
-                console.log('History loaded')
             })
         },
         roll: function() {
-            console.log('roll')
+            console.log('sockets: roll ->')
             this.$socket.emit('roll_request', {
                 ability: this.ability,
                 bonus: this.bonus,
@@ -146,7 +146,7 @@ export default {
             })
         },
         leave: function() {
-            console.log('leave')
+            console.log('http: leave ->')
             this.$http({
                 url: 'http://localhost:5000/leave',
                 method: 'GET'
