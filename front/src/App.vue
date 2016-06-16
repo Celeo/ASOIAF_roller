@@ -1,5 +1,10 @@
 <template>
 <div class="row">
+    <div class="col-md-12">
+        <p id="error" v-if="!connected && hasConnected">Socket server is disconnected</p>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-9">
         <div class="panel panel-default">
             <div class="panel-body">
@@ -98,7 +103,9 @@ export default {
             users: [],
             ability : 2,
             bonus : 0,
-            static : 0
+            static : 0,
+            connected: false,
+            hasConnected: false
         }
     },
     ready() {
@@ -107,9 +114,12 @@ export default {
     sockets: {
         connect: function() {
             console.log('Connected to the backend web socket server')
+            this.connected = true
+            this.hasConnected = true
         },
         disconnect: function() {
             console.log('Disconnected from the backend web socket server')
+            this.connected = false
         },
         roll_event: function() {
             console.log('roll_event')
@@ -172,5 +182,12 @@ h3.nomartop {
 
 a#btn_leave {
     cursor: pointer;
+}
+
+p#error {
+    background-color: rgba(255, 0, 0, 0.5);
+    padding: 5px;
+    color: black;
+    font-size: 1.5em;
 }
 </style>
