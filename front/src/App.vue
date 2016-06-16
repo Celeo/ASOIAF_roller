@@ -1,24 +1,505 @@
 <template>
-<div id="app">
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#home" aria-controls="home" role="tab" data-toggle="tab">Dice</a>
+    </li>
+    <li role="presentation">
+        <a href="#reference" aria-controls="reference" role="tab" data-toggle="tab">Reference</a>
+    </li>
+    <li role="presentation">
+        <a href="#intrigue" aria-controls="intrigue" role="tab" data-toggle="tab">Intrigue</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="home">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>ASOIAF RPG Dice Roller</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="control" class="float-middle">
+                            <div class="row">
+                                <div class="col-sm-2 col-sm-offset-2">
+                                    <input type="text" class="form-control" id="dice_ability" placeholder="Ability dice">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="dice_bonus" placeholder="Bonus dice">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="dice_static" placeholder="Static +X">
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-primary" v-on:click="roll">Roll</button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="history">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>When</th>
+                                        <th>Who</th>
+                                        <th>Dice</th>
+                                        <th>Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="entry in history">
+                                        <td>{{ entry.date }}</td>
+                                        <td>{{ entry.name }}</td>
+                                        <td>{{ entry.dice }}</td>
+                                        <td>{{ entry.result }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                    <div class="clearfix">
+                        <h3 class="pull-left panel-title">People</h3>
+                        <!-- TODO -->
+                        <a v-on:click="leave"><span class="pull-right label label-danger">Leave</span></a>
+                    </div>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <p id="users">
+                                <span v-for="name in names">{{ name }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">How to use this app</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            In the two textboxes at the top of the screen in the middle, input the number of dice
+                            you have for the test's relevant <strong>ability</strong> in the first box, and the number
+                            of any <strong>bonus</strong> dice you get to add to the test. Then, click <strong>Roll</strong>.
+                            <br><br>
+                            Your rolls and everyone else's rolls will appear in the middle of the screen in reverse
+                            chronological order (so the most recent rolls are at the top). The "Result" column shows your 
+                            results in the order <code>raw rolls -> top dice you keep -> final value</code>.
+                            <br><br>
+                            If you need to change your name, use the <strong>Leave</strong> link in the upper-right of the
+                            screen to go back to the sign-in page.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="reference">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Reference</h2>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Quick Reference</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Let me know what you want here.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="intrigue">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Intrigue</h2>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Stats</h3>
+                    </div>
+                    <div class="panel-body">
+                        <h3 class="nomartop">Defense</h3>
+                        <p>= Awareness + Cunning + Status + Bonuses</p>
+                        <h3>Composure</h3>
+                        <p>= 3 x Will</p>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Structure</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ol>
+                            <li>Type</li>
+                            <li>Scene</li>
+                            <li>Objective</li>
+                            <li>Disposition</li>
+                            <li>Initiative</li>
+                            <li>Technique</li>
+                            <li>Roleplaying</li>
+                            <li>Actions and Tests</li>
+                            <li>Repeat</li>
+                            <li>Resolution</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">1) Type <small>page 140</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Simple</td>
+                                    <td>A single test, two participants, short-term consequences</td>
+                                </tr>
+                                <tr>
+                                    <td>Standard</td>
+                                    <td>Several tests, two or more participants, long-term consequences</td>
+                                </tr>
+                                <tr>
+                                    <td>Complex</td>
+                                    <td>Many tests, many participants, takes place over several Standard Intrigues, far-reaching consequences</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">2) Scene <small>page 142</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            The GM sets the scene:
+                        </p>
+                        <ul>
+                            <li>Location</li>
+                            <li>Participants</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">3) Objective <small>page 142</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Set the objective of the intrigue. Common goals are:
+                        </p>
+                        <ul>
+                            <li>Friendship</li>
+                            <li>Information</li>
+                            <li>Service</li>
+                            <li>Decit</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">4) Disposition <small>page 143</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Each participant's outlook on the others in the intrigue.
+                        </p>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>DR</th>
+                                    <th>Deception Mod</th>
+                                    <th>Persuation Mod</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Affectionate</td>
+                                    <td>1</td>
+                                    <td>-2</td>
+                                    <td>+5</td>
+                                </tr>
+                                <tr>
+                                    <td>Friendly</td>
+                                    <td>2</td>
+                                    <td>-1</td>
+                                    <td>+3</td>
+                                </tr>
+                                <tr>
+                                    <td>Amiable</td>
+                                    <td>3</td>
+                                    <td>0</td>
+                                    <td>+1</td>
+                                </tr>
+                                <tr>
+                                    <td>Indifferent</td>
+                                    <td>4</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>Dislike</td>
+                                    <td>5</td>
+                                    <td>+1</td>
+                                    <td>-2</td>
+                                </tr>
+                                <tr>
+                                    <td>Unfriendly</td>
+                                    <td>6</td>
+                                    <td>+2</td>
+                                    <td>-4</td>
+                                </tr>
+                                <tr>
+                                    <td>Malicious</td>
+                                    <td>7</td>
+                                    <td>+3</td>
+                                    <td>-6</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">5) Initiative <small>page 146</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Each participant rolls a <strong>Status test with bonus Reputation</strong>. This is the order of initiative unless someone
+                            has Eloquent.
+                        </p>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">6) Technique <small>page 146</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Select a technique to use in the Intrigue. You may use either Persuation or Deception for the following techniques
+                            so long as it makes sense.
+                        </p>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Influence</th>
+                                    <th>Persuation Spec.</th>
+                                    <th>Deception Spec.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Bargain</td>
+                                    <td>Cunning</td>
+                                    <td>Bargain</td>
+                                    <td>Bluff</td>
+                                </tr>
+                                <tr>
+                                    <td>Charm</td>
+                                    <td>Persuation</td>
+                                    <td>Charm</td>
+                                    <td>Act</td>
+                                </tr>
+                                <tr>
+                                    <td>Convince</td>
+                                    <td>Will</td>
+                                    <td>Convince</td>
+                                    <td>Act</td>
+                                </tr>
+                                <tr>
+                                    <td>Incite</td>
+                                    <td>Cunning</td>
+                                    <td>Incite</td>
+                                    <td>Bluff</td>
+                                </tr>
+                                <tr>
+                                    <td>Intimidate</td>
+                                    <td>Will</td>
+                                    <td>Intimidate</td>
+                                    <td>Act or Bluff</td>
+                                </tr>
+                                <tr>
+                                    <td>Seduce</td>
+                                    <td>Persuation</td>
+                                    <td>Seduce</td>
+                                    <td>Bluff</td>
+                                </tr>
+                                <tr>
+                                    <td>Taunt</td>
+                                    <td>Awareness</td>
+                                    <td>Taunt</td>
+                                    <td>Bluff</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">7) Rollplay <small>page 148</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Roleplay.
+                        </p>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">8) Action and Tests <small>page 149</small></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Actions:
+                        </p>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Assist</td>
+                                    <td>
+                                        Support another character by beating a Challenging(9) Persuation test and give your target half your Persuation
+                                        rank (round down) to their next test as a static modifier.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Consider</td>
+                                    <td>
+                                        Pass on your action. You gain 2 bonus dice on any 1 dice you take next. These bonus dice cannot exceed the rank
+                                        of the ability you'll use. Excess bonus dice are lost after that single roll.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Fast Talk</td>
+                                    <td>
+                                        Many a Persutation test against the target's passive Will result. If you achieve at least 2 degrees, the target
+                                        loses his Cunning rank from his Intrigue Defense until the end of the next exchange.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Influence</td>
+                                    <td>
+                                        Roll a Deception or Persuation test with bonus dice from your technique. If successful, you influence them by
+                                        the amount from your technique * degrees of success. You reduce all Influence by the target's Disposition Rating.
+                                        Remaining Influence applies to their Composure.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Manipulate</td>
+                                    <td>
+                                        Goad the target into using a specific technique of your choosing with a successful Persutation vs passive Will test.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Mollify</td>
+                                    <td>
+                                        Roll a Persutation test vs Formidable(12) taking into account Disposition to restore Compure equal to your Persuation
+                                        rank plus 1 per degree to the target.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Quit</td>
+                                    <td>
+                                        Abandon thread.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Read Target</td>
+                                    <td>
+                                        Make an Awareness test against the target's passive Deception result. If you equal or beat it, you learn the target's
+                                        current dispositon and the technique being used. You gain 1 standard dice on all Persuation and Deception tests
+                                        for the duration of the Intrigue.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Shield of Reputation</td>
+                                    <td>
+                                        Use your Status to influence the target. Roll a Status vs base Will test. If you equal or beat it, the target's
+                                        disposition automatically improves by one step. Can only be used once per intrigue.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Switch to Combat</td>
+                                    <td>
+                                        To arms!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Withdraw</td>
+                                    <td>
+                                        Roll a Will test with bonus from Dedication. This result replaces your Intrigue Defense until the end of the next exchange.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">9) Repeat</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Go to step 2.
+                        </p>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">10) Resolution</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Someone is screwed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
 import Vue from 'vue'
 import VueSocketio from 'vue-socket.io'
+import VueResource from 'vue-resource'
 
 
 Vue.use(VueSocketio, 'http://localhost:5000')
+Vue.use(VueResource)
+Vue.http.options.root = '/'
 
 export default {
     data () {
         return {
-            //
+            history: []
         }
     },
-    computed: {
-        //
+    ready() {
+        this.getHistory()
     },
     sockets: {
         connect: function() {
@@ -29,19 +510,52 @@ export default {
         },
         event: function(data) {
             console.log('Got event: ' + data.message)
-
+            // TODO
         },
         response: function(data) {
             console.log('Got response: ' + data.message)
-
+            // TODO
         }
     },
     methods: {
-        // 
+        getHistory: function() {
+            console.log('Loading history from backend ...')
+            this.$http.get('http://localhost:5000/history').then((response) => {
+                this.$set('history', response.data)
+                console.log('History loaded')
+            })
+        },
+        roll: function() {
+            console.log('roll')
+            // TODO
+        },
+        leave: function() {
+            console.log('leave')
+            // TODO
+        }
     }
 }
 </script>
 
 <style>
+body {
+    padding-top: 1em;
+    background-color: rgba(0, 0, 0, 0.02);
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5em;
+}
 
+div.container-large {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+span.loading {
+    color: gray;
+}
+
+h3.nomartop {
+    margin-top: 0;
+}
 </style>

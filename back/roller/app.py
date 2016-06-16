@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, abort, redirect, url_for
+from flask import Flask, jsonify, session, request, abort, redirect, url_for
 from flask_socketio import SocketIO, emit
 from flask_redis import Redis
 from datetime import datetime
@@ -22,45 +22,41 @@ def name():
     return session.get('name', '')
 
 
-@app.route('/')
-def index():
-    # TODO
-    if not name():
-        return render_template('login.html')
-    return render_template('index.html')
-
-
 @app.route('/setname', methods=['GET', 'POST'])
 def set_name():
     # TODO
     name = request.form.get('name')
     if name:
         session['name'] = name
-        return redirect(url_for('index'))
+        return jsonify(name)
     else:
         abort(400)
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
+
 @app.route('/history')
 def history():
-    # TODO
-    history = [History.from_json(js) for js in redis.lrange('history', 0, redis.llen('history'))]
-    return render_template('history.html', history=history)
+    return jsonify(redis.lrange('history', 0, redis.llen('history')))
 
 
 @app.route('/history/clear')
 def clear_history():
-    # TODO
     redis.delete('history')
     emit('roll_event', {}, broadcast=True, namespace='/roll')
-    return redirect(url_for('index'))
+    return jsonify({})
 
 
 @app.route('/logout')
 def logout_page():
-    # TODO
     session.clear()
-    return redirect(url_for('index'))
+    return jsonify({})
 
 
 @socketio.on('connect', namespace='/roll')
