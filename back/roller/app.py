@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, session, request, abort, redirect, url_for
+from flask import Flask, jsonify, session, request, abort
 from flask_socketio import SocketIO, emit
 from flask_redis import Redis
 from datetime import datetime
@@ -24,11 +24,14 @@ def name():
 
 @app.route('/setname', methods=['GET', 'POST'])
 def set_name():
-    # TODO
     name = request.form.get('name')
+    print('app.setname: name =', name)
     if name:
         session['name'] = name
-        return jsonify(name)
+        if name not in users:
+            users.append(name)
+        # TODO emit notification
+        return jsonify({'name': name})
     else:
         abort(400)
 
@@ -43,39 +46,46 @@ def after_request(response):
 
 @app.route('/history')
 def history():
-    return jsonify(redis.lrange('history', 0, redis.llen('history')))
+    history = []
+    for item in redis.lrange('history', 0, redis.llen('history')):
+        history.append(json.loads(item.decode('utf-8')))
+    return jsonify({'history': history})
 
 
 @app.route('/history/clear')
 def clear_history():
     redis.delete('history')
-    emit('roll_event', {}, broadcast=True, namespace='/roll')
+    emit('roll_event', {}, broadcast=True, namespace='/')
     return jsonify({})
 
 
-@app.route('/logout')
-def logout_page():
+@app.route('/leave')
+def leave():
+    print('{} is leaving'.format(name()))
+    if name() in users:
+        users.remove(name())
     session.clear()
     return jsonify({})
 
 
-@socketio.on('connect', namespace='/roll')
+@socketio.on('connect', namespace='/')
 def handle_connect():
     if not name() in users:
         users.append(name())
-    emit('users', '<br>'.join(sorted(users)), broadcast=True)
+    emit('users', {'users': sorted(users)}, broadcast=True)
 
 
-@socketio.on('disconnect', namespace='/roll')
+@socketio.on('disconnect', namespace='/')
 def handle_disconnect():
     if name() in users:
         users.remove(name())
-    emit('users', '<br>'.join(sorted(users)), broadcast=True)
+    emit('users', {'users': sorted(users)}, broadcast=True)
 
 
-@socketio.on('roll_request',  namespace='/roll')
+@socketio.on('roll_request', namespace='/')
 def handle_roll_request(message):
     try:
+        print('handle_roll_request')
         ability = int(message.get('ability') or 2)
         bonus = int(message.get('bonus') or 0)
         static = int(message.get('static') or 0)
