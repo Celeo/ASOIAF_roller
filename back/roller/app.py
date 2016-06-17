@@ -84,6 +84,7 @@ def handle_leave():
     if request.sid in users:
         print('{} is leaving'.format(name()))
         del users[request.sid]
+    emit('users', online_users(), broadcast=True)
 
 
 @socketio.on('roll_request')
