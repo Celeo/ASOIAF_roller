@@ -146,12 +146,10 @@ export default {
             })
         },
         leave: function() {
-            console.log('http: leave ->')
-            this.$http({
-                url: 'http://localhost:5000/leave',
-                method: 'GET'
-            }).then((response) => {
-                this.$router.go('/')
+            console.log('sockets: leave ->')
+            let router = this.$router
+            this.$socket.emit('leave', function() {
+                router.go('/')
             })
         }
     }

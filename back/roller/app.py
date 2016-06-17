@@ -13,27 +13,8 @@ app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 socketio = SocketIO(app)
 redis = Redis(app)
-users = []
+users = {}
 __all__ = ['app', 'socketio']
-
-
-def name():
-    # TODO
-    return session.get('name', '')
-
-
-@app.route('/setname', methods=['GET', 'POST'])
-def set_name():
-    name = request.form.get('name')
-    print('app.setname: name =', name)
-    if name:
-        session['name'] = name
-        if name not in users:
-            users.append(name)
-        # TODO emit notification
-        return jsonify({'name': name})
-    else:
-        abort(400)
 
 
 @app.after_request
@@ -59,27 +40,45 @@ def clear_history():
     return jsonify({})
 
 
-@app.route('/leave')
-def leave():
-    print('{} is leaving'.format(name()))
-    if name() in users:
-        users.remove(name())
-    session.clear()
-    return jsonify({})
+@app.route('/users')
+def get_users():
+    return jsonify({'users': list(users.values())})
+
+
+def name():
+    for sid, name in users.items():
+        if sid == request.sid:
+            return name
 
 
 @socketio.on('connect')
 def handle_connect():
-    if not name() in users:
-        users.append(name())
-    emit('users', {'users': sorted(users)}, broadcast=True)
+    if request.sid not in users:
+        users[request.sid] = ''
 
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    if name() in users:
-        users.remove(name())
-    emit('users', {'users': sorted(users)}, broadcast=True)
+    if name():
+        del users[request.sid]
+        emit('users', {'users': users}, broadcast=True)
+
+
+@socketio.on('setname')
+def handle_set_name(message):
+    name = message.get('name')
+    if name:
+        print('handle_set_name =', message.get('name'))
+        users[request.sid] = message.get('name')
+    else:
+        print('handle_set_name received a blank name')
+
+
+@socketio.on('leave')
+def handle_leave():
+    if name():
+        print('{} is leaving'.format(name()))
+        users.remove(request.sid)
 
 
 @socketio.on('roll_request')

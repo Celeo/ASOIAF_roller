@@ -31,14 +31,9 @@ export default {
     methods: {
         setName: function() {
             console.log('Name is ' + this.name)
-            this.$http({
-                url: 'http://localhost:5000/setname',
-                method: 'POST',
-                data: {
-                    name: this.name
-                }
-            }).then((response) => {
-                this.$router.go('/app')
+            let router = this.$router
+            this.$socket.emit('setname', {name: this.name}, function() {
+                router.go('/app')
             })
         }
     }
