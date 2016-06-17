@@ -51,16 +51,16 @@
     <div class="col-md-3">
         <div class="panel panel-default">
             <div class="panel-heading">
-            <div class="clearfix">
-                <h3 class="pull-left panel-title">People</h3>
-                <a v-on:click="leave" id="btn_leave"><span class="pull-right label label-danger">Leave</span></a>
-            </div>
+                <div class="clearfix">
+                    <h3 class="pull-left panel-title">People</h3>
+                    <a v-on:click="leave" id="btn_leave"><span class="pull-right label label-danger">Leave</span></a>
+                </div>
             </div>
             <div class="panel-body">
                 <div>
                     <p id="users">
-                        <span v-for="name in names">
-                            {{ name }}
+                        <span v-for="name in activeUsers">
+                            {{ name }}<br>
                         </span>
                     </p>
                 </div>
@@ -92,6 +92,7 @@
 <script>
 import Vue from 'vue'
 import VueSocketio from 'vue-socket.io'
+import store from './store'
 
 
 Vue.use(VueSocketio, 'http://localhost:5000/');
@@ -100,16 +101,21 @@ export default {
     data () {
         return {
             history: [],
-            users: [],
+            activeUsers: [],
             ability : 2,
             bonus : 0,
             static : 0,
             connected: false,
-            hasConnected: false
+            hasConnected: false,
+            store
         }
     },
     ready() {
         this.getHistory()
+        let store = this.store
+        this.$socket.emit('setname', {name: this.store.state.name}, function() {
+            console.log('socket: setname = ' + store.state.name + ' ->')
+        })
     },
     sockets: {
         connect: function() {
@@ -127,7 +133,7 @@ export default {
         },
         users: function(data) {
             console.log('<- sockets: users')
-            this.users = data.users
+            this.activeUsers = data.users
         }
     },
     methods: {

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, session, request, abort
+from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_redis import Redis
 from datetime import datetime
@@ -42,7 +42,7 @@ def clear_history():
 
 @app.route('/users')
 def get_users():
-    return jsonify({'users': list(users.values())})
+    return jsonify(online_users())
 
 
 def name():
@@ -51,34 +51,39 @@ def name():
             return name
 
 
+def online_users():
+    ret = []
+    for u in users.values():
+        if u:
+            ret.append(u)
+    print(ret)
+    return {'users': ret}
+
+
 @socketio.on('connect')
 def handle_connect():
-    if request.sid not in users:
-        users[request.sid] = ''
+    users[request.sid] = ''
+    emit('users', online_users(), broadcast=True)
 
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    if name():
+    if request.sid in users:
         del users[request.sid]
-        emit('users', {'users': users}, broadcast=True)
+        emit('users', online_users(), broadcast=True)
 
 
 @socketio.on('setname')
 def handle_set_name(message):
-    name = message.get('name')
-    if name:
-        print('handle_set_name =', message.get('name'))
-        users[request.sid] = message.get('name')
-    else:
-        print('handle_set_name received a blank name')
+    users[request.sid] = message.get('name')
+    emit('users', online_users(), broadcast=True)
 
 
 @socketio.on('leave')
 def handle_leave():
-    if name():
+    if request.sid in users:
         print('{} is leaving'.format(name()))
-        users.remove(request.sid)
+        del users[request.sid]
 
 
 @socketio.on('roll_request')

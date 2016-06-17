@@ -8,7 +8,7 @@
             <div class="panel-body">
                 <form v-on:submit.prevent="setName" method="POST">
                 <div class="form-group">
-                    <input type="text" v-model="name" class="form-control" placeholder="Your name" required autofocus>
+                    <input type="text" v-model="store.state.name" class="form-control" placeholder="Your name" required autofocus>
                 </div>
                 <button type="submit" class="btn btn-primary">Go</button>
                 </form>
@@ -20,19 +20,19 @@
 
 <script>
 import Vue from 'vue'
+import store from './store'
 
 
 export default {
     data() {
         return {
-            name: ''
+            store
         }
     },
     methods: {
         setName: function() {
-            console.log('Name is ' + this.name)
             let router = this.$router
-            this.$socket.emit('setname', {name: this.name}, function() {
+            this.$socket.emit('setname', {name: this.store.state.name}, function() {
                 router.go('/app')
             })
         }
