@@ -198,4 +198,7 @@ p#error {
 .fade-enter, .fade-leave {
     opacity: 0;
 }
+div.container > h2 {
+    margin-top: 0;
+}
 </style>
