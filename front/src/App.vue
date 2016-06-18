@@ -95,7 +95,7 @@ import VueSocketio from 'vue-socket.io'
 import store from './store'
 
 
-Vue.use(VueSocketio, 'http://localhost:5000/');
+Vue.use(VueSocketio, 'https://asoiaf.celeodor.com/');
 
 export default {
     data () {
@@ -139,7 +139,7 @@ export default {
     methods: {
         getHistory: function() {
             console.log('http: history ->')
-            this.$http.get('http://localhost:5000/history').then((response) => {
+            this.$http.get('http://asoiaf.celeodor.com/api/history').then((response) => {
                 this.$set('history', response.data.history)
             })
         },

@@ -107,7 +107,7 @@ def handle_roll_request(message):
         keep_rolls = map(str, keep_rolls)
         h = None
         if static:
-            h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {} -> {}'.format( \
+            h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {} -> {}'.format(
                 ','.join(all_rolls) + '+' + str(static),
                 ','.join(keep_rolls) + '+' + str(static),
                 str(total) + '+' + str(static),
