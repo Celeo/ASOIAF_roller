@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
+import VueSocketio from 'vue-socket.io'
+
+
 import App from './App.vue'
 import Login from './Login.vue'
 import store from './store'
@@ -9,6 +12,8 @@ import store from './store'
 Vue.use(VueResource)
 Vue.http.options.root = '/'
 Vue.http.options.emulateJSON = true
+
+Vue.use(VueSocketio, 'http://localhost:13493/');
 
 Vue.use(VueRouter)
 let router = new VueRouter({

@@ -1,88 +1,90 @@
 <template>
-<div class="row">
-    <div class="col-md-12">
-        <p id="error" v-if="!connected && hasConnected">Socket server is disconnected</p>
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <p id="error" v-if="!connected && hasConnected">Socket server is disconnected</p>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-9">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div id="control" class="float-middle">
-                    <div class="row">
-                        <div class="col-sm-2 col-sm-offset-2">
-                            <input class="form-control" v-model="ability" placeholder="Ability dice">
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="form-control" v-model="bonus" placeholder="Bonus dice">
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="form-control" v-model="static" placeholder="Static +X">
-                        </div>
-                        <div class="col-sm-2">
-                            <button class="btn btn-primary" v-on:click="roll">Roll</button>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="control" class="float-middle">
+                        <div class="row">
+                            <div class="col-sm-2 col-sm-offset-2">
+                                <input class="form-control" v-model="ability" placeholder="Ability dice">
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" v-model="bonus" placeholder="Bonus dice">
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" v-model="static" placeholder="Static +X">
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="btn btn-primary" v-on:click="roll">Roll</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <hr>
-                <div id="history">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>When</th>
-                                <th>Who</th>
-                                <th>Dice</th>
-                                <th>Result</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="entry in history">
-                                <td>{{ entry.date }}</td>
-                                <td>{{ entry.name }}</td>
-                                <td>{{ entry.dice }}</td>
-                                <td>{{ entry.result }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <hr>
+                    <div id="history">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>When</th>
+                                    <th>Who</th>
+                                    <th>Dice</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="entry in history" transition="">
+                                    <td>{{ entry.date }}</td>
+                                    <td>{{ entry.name }}</td>
+                                    <td>{{ entry.dice }}</td>
+                                    <td>{{ entry.result }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <div class="clearfix">
-                    <h3 class="pull-left panel-title">People</h3>
-                    <a v-on:click="leave" id="btn_leave"><span class="pull-right label label-danger">Leave</span></a>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="clearfix">
+                        <h3 class="pull-left panel-title">People</h3>
+                        <a v-on:click="leave" id="btn_leave"><span class="pull-right label label-danger">Leave</span></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <p id="users">
+                            <span v-for="name in activeUsers">
+                                {{ name }}<br>
+                            </span>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="panel-body">
-                <div>
-                    <p id="users">
-                        <span v-for="name in activeUsers">
-                            {{ name }}<br>
-                        </span>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">How to use this app</h3>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        In the two textboxes at the top of the screen in the middle, input the number of dice
+                        you have for the test's relevant <strong>ability</strong> in the first box, and the number
+                        of any <strong>bonus</strong> dice you get to add to the test. Then, click <strong>Roll</strong>.
+                        <br><br>
+                        Your rolls and everyone else's rolls will appear in the middle of the screen in reverse
+                        chronological order (so the most recent rolls are at the top). The "Result" column shows your 
+                        results in the order <code>raw rolls -> top dice you keep -> final value</code>.
+                        <br><br>
+                        If you need to change your name, use the <strong>Leave</strong> link in the upper-right of the
+                        screen to go back to the sign-in page.
                     </p>
                 </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">How to use this app</h3>
-            </div>
-            <div class="panel-body">
-                <p>
-                    In the two textboxes at the top of the screen in the middle, input the number of dice
-                    you have for the test's relevant <strong>ability</strong> in the first box, and the number
-                    of any <strong>bonus</strong> dice you get to add to the test. Then, click <strong>Roll</strong>.
-                    <br><br>
-                    Your rolls and everyone else's rolls will appear in the middle of the screen in reverse
-                    chronological order (so the most recent rolls are at the top). The "Result" column shows your 
-                    results in the order <code>raw rolls -> top dice you keep -> final value</code>.
-                    <br><br>
-                    If you need to change your name, use the <strong>Leave</strong> link in the upper-right of the
-                    screen to go back to the sign-in page.
-                </p>
             </div>
         </div>
     </div>
@@ -91,11 +93,7 @@
 
 <script>
 import Vue from 'vue'
-import VueSocketio from 'vue-socket.io'
 import store from './store'
-
-
-Vue.use(VueSocketio, 'https://asoiaf.celeodor.com/');
 
 export default {
     data () {
@@ -139,7 +137,7 @@ export default {
     methods: {
         getHistory: function() {
             console.log('http: history ->')
-            this.$http.get('http://asoiaf.celeodor.com/api/history').then((response) => {
+            this.$http.get('http://localhost:13493/history').then((response) => {
                 this.$set('history', response.data.history)
             })
         },
@@ -193,5 +191,11 @@ p#error {
     padding: 5px;
     color: black;
     font-size: 1.5em;
+}
+.fade-transition {
+    transition: opacity .5s ease;
+}
+.fade-enter, .fade-leave {
+    opacity: 0;
 }
 </style>
