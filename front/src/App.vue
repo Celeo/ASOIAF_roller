@@ -73,9 +73,11 @@
                 </div>
                 <div class="panel-body">
                     <p>
-                        In the two textboxes at the top of the screen in the middle, input the number of dice
-                        you have for the test's relevant <strong>ability</strong> in the first box, and the number
-                        of any <strong>bonus</strong> dice you get to add to the test. Then, click <strong>Roll</strong>.
+                        In the three textboxes at the top of the screen in the middle, input the number of dice
+                        you have for the test's relevant <strong>ability</strong> in the first box, the number
+                        of any <strong>bonus</strong> dice you get to add to the test in the second, and any
+                        static modifier in the third.
+                        Then, click <strong>Roll</strong>.
                         <br><br>
                         Your rolls and everyone else's rolls will appear in the middle of the screen in reverse
                         chronological order (so the most recent rolls are at the top). The "Result" column shows your 
