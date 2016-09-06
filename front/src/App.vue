@@ -113,37 +113,30 @@ export default {
     this.getHistory()
     let store = this.store
     this.$socket.emit('setname', {name: this.store.state.name}, function() {
-      console.log('socket: setname = ' + store.state.name + ' ->')
     })
   },
   sockets: {
     connect: function() {
-      console.log('<- sockets: Connected to the backend web socket server')
       this.connected = true
       this.hasConnected = true
     },
     disconnect: function() {
-      console.log('<- sockets: Disconnected from the backend web socket server')
       this.connected = false
     },
     roll_event: function() {
-      console.log('<- sockets: roll_event')
       this.getHistory()
     },
     users: function(data) {
-      console.log('<- sockets: users')
       this.activeUsers = data.users
     }
   },
   methods: {
     getHistory: function() {
-      console.log('http: history ->')
       this.$http.get('http://localhost:13493/history').then((response) => {
         this.$set('history', response.data.history)
       })
     },
     roll: function() {
-      console.log('sockets: roll ->')
       this.$socket.emit('roll_request', {
         ability: this.ability,
         bonus: this.bonus,
@@ -151,7 +144,6 @@ export default {
       })
     },
     leave: function() {
-      console.log('sockets: leave ->')
       let router = this.$router
       this.$socket.emit('leave', function() {
         router.go('/')
