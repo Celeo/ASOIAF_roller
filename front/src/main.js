@@ -17,31 +17,31 @@ Vue.use(VueSocketio, 'http://localhost:13493/');
 
 Vue.use(VueRouter)
 let router = new VueRouter({
-    hashbang: false,
-    history:  true
+  hashbang: false,
+  history:  true
 })
 router.redirect({
-    '/': '/login',
-    '*': '/login'
+  '/': '/login',
+  '*': '/login'
 })
 router.map({
-    '/login': {
-        component: Login,
-        name: 'login'
-    },
-    '/app': {
-        component: App,
-        name: 'app'
-    }
+  '/login': {
+    component: Login,
+    name: 'login'
+  },
+  '/app': {
+    component: App,
+    name: 'app'
+  }
 })
 router.beforeEach(function(transition) {
-    if (transition.to.path === '/app') {
-        if (store.state.name === '') {
-            transition.abort()
-            return
-        }
+  if (transition.to.path === '/app') {
+    if (store.state.name === '') {
+      transition.abort()
+      return
     }
-    transition.next()
+  }
+  transition.next()
 })
 
 let Root = Vue.extend({})
