@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_redis import Redis
 from datetime import datetime
-from random import randint
+from random import SystemRandom
 import json
 
 import eventlet
@@ -14,6 +14,7 @@ app.config.from_pyfile('config.cfg')
 socketio = SocketIO(app)
 redis = Redis(app)
 users = {}
+random = SystemRandom()
 __all__ = ['app', 'socketio']
 
 
@@ -99,7 +100,7 @@ def handle_roll_request(message):
         keep_rolls = []
         all_rolls = []
         for _ in range(ability + bonus):
-            rolls.append(randint(1, 6))
+            rolls.append(random.randint(1, 6))
         all_rolls = list(map(str, rolls))
         for _ in range(ability):
             keep_rolls.append(rolls.pop(rolls.index(max(rolls))))
