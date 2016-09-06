@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, request
-from flask_socketio import SocketIO, emit
-from flask_redis import Redis
 from datetime import datetime
 from random import SystemRandom
 import json
+
+from flask import Flask, jsonify, request
+from flask_socketio import SocketIO, emit
+from flask_redis import Redis
+import arrow
 
 import eventlet
 eventlet.monkey_patch()
@@ -123,11 +125,11 @@ def handle_roll_request(message):
 
 class History:
 
-    def __init__(self, name, dice, result, date=None):
+    def __init__(self, name, dice, result):
         self.name = name
         self.dice = dice
         self.result = result
-        self.date = date or datetime.now().strftime('%I:%M:%S %p')
+        self.date = arrow.utcnow().to('US/Pacific').strftime('%I:%M:%S %p')
 
     def to_json(self):
         return json.dumps({
