@@ -37,7 +37,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr is="entry" :date="entry.date" :name="entry.name" :dice="entry.dice" :result="entry.result" v-for="entry in history"></entry>
+                <tr is="entry" :entry="entry" v-for="entry in history"></entry>
               </tbody>
             </table>
           </div>

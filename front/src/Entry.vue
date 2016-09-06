@@ -9,14 +9,20 @@
 
 <script>
 export default {
-  props: [
-    'date',
-    'name',
-    'dice',
-    'result'
-  ],
+  props: ['entry'],
   data() {
-    return {}
+    return {
+      date: '',
+      name: '',
+      dice: '',
+      result: ''
+    }
+  },
+  created: function() {
+    this.date = this.entry.date
+    this.name = this.entry.name
+    this.dice = this.entry.dice
+    this.result = this.entry.result
   }
 }
 </script>

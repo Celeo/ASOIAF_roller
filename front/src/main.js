@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 import VueSocketio from 'vue-socket.io'
 
-
 import App from './App.vue'
 import Login from './Login.vue'
 import store from './store'
