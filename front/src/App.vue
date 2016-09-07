@@ -90,8 +90,8 @@
 
 <script>
 import Vue from 'vue'
-import store from './store'
 import Entry from './Entry.vue'
+import config from './config.js'
 
 export default {
   data () {
@@ -103,16 +103,18 @@ export default {
       static : 0,
       connected: false,
       hasConnected: false,
-      store
+      name: ''
     }
   },
   components: {
     'entry': Entry
   },
+  created() {
+    this.name = sessionStorage.getItem('name')
+  },
   ready() {
     this.getHistory()
-    let store = this.store
-    this.$socket.emit('setname', {name: this.store.state.name}, function() {
+    this.$socket.emit('setname', {name: this.name}, function() {
     })
   },
   sockets: {
@@ -132,7 +134,7 @@ export default {
   },
   methods: {
     getHistory: function() {
-      this.$http.get('https://asoiaf.celeodor.com/api/history').then((response) => {
+      this.$http.get(config['api_url'] + 'history').then((response) => {
         this.$set('history', response.data.history)
       })
     },
