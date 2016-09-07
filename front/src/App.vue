@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     getHistory: function() {
-      this.$http.get('http://localhost:13493/history').then((response) => {
+      this.$http.get('https://asoiaf.celeodor.com/api/history').then((response) => {
         this.$set('history', response.data.history)
       })
     },

@@ -12,7 +12,7 @@ Vue.use(VueResource)
 Vue.http.options.root = '/'
 Vue.http.options.emulateJSON = true
 
-Vue.use(VueSocketio, 'http://localhost:13493/');
+Vue.use(VueSocketio, 'https://asoiaf.celeodor.com/');
 
 Vue.use(VueRouter)
 let router = new VueRouter({
