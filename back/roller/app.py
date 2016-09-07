@@ -59,7 +59,6 @@ def online_users():
     for u in users.values():
         if u:
             ret.append(u)
-    print(ret)
     return {'users': ret}
 
 
@@ -85,7 +84,6 @@ def handle_set_name(message):
 @socketio.on('leave')
 def handle_leave():
     if request.sid in users:
-        print('{} is leaving'.format(name()))
         del users[request.sid]
     emit('users', online_users(), broadcast=True)
 
@@ -93,7 +91,6 @@ def handle_leave():
 @socketio.on('roll_request')
 def handle_roll_request(message):
     try:
-        print('handle_roll_request')
         ability = int(message.get('ability') or 2)
         bonus = int(message.get('bonus') or 0)
         static = int(message.get('static') or 0)
