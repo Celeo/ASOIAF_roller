@@ -8,12 +8,18 @@ This app has two components: a front-end in Vue.JS and a back-end in Python usin
 
 1. Install Python3, Node, and npm
 
-2. `cd front && npm install && npm run build`
+2. `cd front && npm install`
 
 3. `cd back && . env/bin/activate && pip install -r requirements.txt`
 
 ## Running
 
+### Development
+
 1. `cd back && . env/bin/activate && nohup ./run.py &`
 
 2. `cd front && npm run dev`
+
+### Production
+
+For production, build the frontend component with `npm run build` and point your server to the `index.html` file. Run the backend in the same manner as during development.
