@@ -27,7 +27,7 @@ div
                   th Dice
                   th Result
               tbody
-                tr(is="entry" :entry="entry" v-for="entry in history")
+                tr(is="entry" \:entry="entry" v-for="entry in history")
     div.col-md-3
       div.panel.panel-default
         div.panel-heading

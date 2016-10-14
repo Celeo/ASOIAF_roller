@@ -19,7 +19,10 @@ const redis = redislib.createClient({
   db: config.redis.db,
   password: config.redis.password
 })
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:8080',
+  credentials: true
+}))
 
 let users = []
 
@@ -27,18 +30,21 @@ let users = []
             Endpoints
 ================================== */
 app.get('/history', (req, res) => {
-  // TODO get history from redis
   const history = []
-  res.send({history: history})
+  redis.lrange('history', 0, -1, (err, lastNode) => {
+    for (let item of lastNode)
+      history.push(JSON.parse(item))
+    res.json({history: history})
+  })
 })
 
 app.get('/history/clear', (req, res) => {
   redis.del('history')
-  res.send({history: []})
+  res.json({history: []})
 })
 
 app.get('/users', (req, res) => {
-  res.send({users: users})
+  res.json({users: users})
 })
 
 /* ==================================
@@ -82,6 +88,63 @@ io.on('connection', (socket => {
     */
   })
 }))
+
+/*
+Leftover Python
+  @socketio.on('roll_request')
+  def handle_roll_request(message):
+      try:
+          ability = int(message.get('ability') or 2)
+          bonus = int(message.get('bonus') or 0)
+          static = int(message.get('static') or 0)
+          total = 0
+          rolls = []
+          keep_rolls = []
+          all_rolls = []
+          for _ in range(ability + bonus):
+              rolls.append(random.randint(1, 6))
+          all_rolls = list(map(str, rolls))
+          for _ in range(ability):
+              keep_rolls.append(rolls.pop(rolls.index(max(rolls))))
+          total = sum(keep_rolls)
+          keep_rolls = map(str, keep_rolls)
+          h = None
+          if static:
+              h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {} -> {}'.format(
+                  ','.join(all_rolls) + '+' + str(static),
+                  ','.join(keep_rolls) + '+' + str(static),
+                  str(total) + '+' + str(static),
+                  str(total + static)))
+          else:
+              h = History(name(), '{}, {}'.format(ability, bonus), '{} -> {} -> {}'.format(','.join(all_rolls), ','.join(keep_rolls), total + static))
+          redis.lpush('history', h.to_json())
+          emit('roll_event', {}, broadcast=True)
+      except Exception as e:
+          print(e)
+
+
+  class History:
+
+      def __init__(self, name, dice, result):
+          self.name = name
+          self.dice = dice
+          self.result = result
+          self.date = arrow.utcnow().to('US/Pacific').strftime('%I:%M:%S %p')
+
+      def to_json(self):
+          return json.dumps({
+              'name': self.name,
+              'dice': self.dice,
+              'result': self.result,
+              'date': self.date
+          })
+
+      @staticmethod
+      def from_json(s):
+          j = json.loads(s.decode('utf-8'))
+          return History(j['name'], j['dice'], j['result'], j['date'])
+
+*/
 
 /* ==================================
           Redis conection
