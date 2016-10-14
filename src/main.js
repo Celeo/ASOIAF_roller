@@ -5,7 +5,7 @@ import VueSocketio from 'vue-socket.io'
 
 import App from './App.vue'
 import Login from './Login.vue'
-import config from './config.js'
+import config from '../config.js'
 
 
 Vue.use(VueResource)
