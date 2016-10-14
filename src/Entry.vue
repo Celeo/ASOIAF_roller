@@ -1,10 +1,9 @@
-<template>
-<tr>
-  <td>{{ date }}</td>
-  <td>{{ name }}</td>
-  <td>{{ dice }}</td>
-  <td>{{ result }}</td>
-</tr>
+<template lang="pug">
+tr
+  td {{ date }}
+  td {{ name }}
+  td {{ dice }}
+  td {{ result }}
 </template>
 
 <script>
