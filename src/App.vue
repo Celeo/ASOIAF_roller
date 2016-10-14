@@ -11,11 +11,11 @@ div
             div.row
               div.col-sm-2.col-sm-offset-2
                 input.form-control(v-model="ability" placeholder="Ability dice")
-              div.col-sm-2">
+              div.col-sm-2
                 input.form-control(v-model="bonus" placeholder="Bonus dice")
-              div.col-sm-2">
+              div.col-sm-2
                 input.form-control(v-model="static" placeholder="Static +X")
-              div.col-sm-2">
+              div.col-sm-2
                 button.btn.btn-primary(v-on:click="roll") Roll
           hr
           div#history
