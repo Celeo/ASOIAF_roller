@@ -5,10 +5,10 @@ div.row
       div.panel-heading
         h1.panel-title Select name
       div.panel-body
-        form(v-on:submit.prevent="setName" method="POST")
-        div.form-group
-          input.form-control(v-model="name" placeholder="Your name" required autofocus)
-        button.btn.btn-primary(type="submit") Go
+        form(@submit.prevent="setName")
+          div.form-group
+            input.form-control(v-model="name" placeholder="Your name" required autofocus)
+          button.btn.btn-primary(type="submit") Go
 </template>
 
 <script>
@@ -22,12 +22,11 @@ export default {
     }
   },
   methods: {
-    setName: function() {
+    setName() {
       let router = this.$router
       sessionStorage.setItem('name', this.name)
-      this.$socket.emit('setname', {name: this.name}, function() {
-        router.go('/app')
-      })
+      this.$socket.emit('setname', {name: this.name})
+      router.go('/app')
     }
   }
 }

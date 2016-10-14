@@ -85,41 +85,48 @@ export default {
   },
   ready() {
     this.getHistory()
-    this.$socket.emit('setname', {name: this.name}, function() {
-    })
+    this.getUsers()
   },
   sockets: {
-    connect: function() {
+    connect() {
       this.connected = true
       this.hasConnected = true
     },
-    disconnect: function() {
+    disconnect() {
       this.connected = false
     },
-    roll_event: function() {
+    roll_event() {
       this.getHistory()
     },
-    users: function(data) {
-      this.activeUsers = data.users
+    users(data) {
+      console.log('socket::users')
+      this.getUsers()
     }
   },
   methods: {
-    getHistory: function() {
+    getHistory() {
       this.$http.get(config['api_url'] + 'history').then((response) => {
         this.$set('history', response.data.history)
       })
     },
-    roll: function() {
+    roll() {
       this.$socket.emit('roll_request', {
         ability: this.ability,
         bonus: this.bonus,
         static: this.static
       })
     },
-    leave: function() {
+    leave() {
       let router = this.$router
       this.$socket.emit('leave', function() {
         router.go('/')
+      })
+    },
+    getUsers() {
+      console.log('getUsers()')
+      this.$http.get(config['api_url'] + 'users').then((response) => {
+        console.log(`Users: ${response.data.users}`)
+        this.$set('activeUsers', response.data.users)
       })
     }
   }
